@@ -30,7 +30,7 @@ const fileFilter = (request, file, callback) => {
 const file = multer({
   storage: storage,
   limits: {
-    fileSize: 500000,
+    fileSize: 100000,
   },
   fileFilter: fileFilter,
 });
