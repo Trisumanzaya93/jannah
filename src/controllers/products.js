@@ -110,30 +110,31 @@ const deleteProductById = async (req, res) => {
 };
 
 const getAllProduct = async (req, res) => {
-  try {
-    const { per_page, page, search } = req.query;
-    const where = {};
-    const whereOr = [];
-    const limit = parseInt(per_page ?? 10);
-    const offset = parseInt((page ?? 1) * limit) - limit;
+  const { per_page, page, search } = req.query;
+  const where = {};
+  const whereOr = [];
+  const limit = parseInt(per_page ?? 10);
+  const offset = parseInt((page ?? 1) * limit) - limit;
 
-    if (search) {
-        whereOr.push(
-          {
-            name: {
-              [Op.like]: `%${search}%`,
-            },
-          }
-        );
-      }
-      const result = await model.products.findAll({
-        where,
-        limit: limit,
-        offset: offset,
-        // order: [[sortBy ?? "createdAt", sort ?? "DESC"]],
-      });
+  if (search) {
+      whereOr.push(
+        {
+          name: {
+            [Op.like]: `%${search}%`,
+          },
+        }
+      )
+    }
+    if (whereOr.length !== 0) where[Op.or] = whereOr;
+    console.log(search);
+    try {
+    const result = await model.products.findAll({
+      where,
+      limit: limit,
+      offset: offset,
+      // order: [[sortBy ?? "createdAt", sort ?? "DESC"]],
+    });
       const totalPage= await model.products.findAndCountAll()
-      console.log(result);
       return pagination(res, req, {
         data: result,
         total: totalPage.count,
